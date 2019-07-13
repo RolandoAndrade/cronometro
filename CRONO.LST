@@ -1,0 +1,202 @@
+MPASM 02.15 Released            CRONO.ASM   1-20-2015  17:26:08         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                    00001         LIST    P=16F84
+                    00002 
+  00000012          00003 AUX             EQU     12H
+  00000002          00004 PCL             EQU     02H
+  00000011          00005 MILI            EQU     11H
+  00000006          00006 PB              EQU     06H
+  00000006          00007 TRISB           EQU     06H
+  00000003          00008 STATUS          EQU     03H
+  00000001          00009 OP              EQU     01H
+  0000000B          00010 INTCON          EQU     0BH
+  00000010          00011 VAR             EQU     10H
+  00000001          00012 TMR0            EQU     01H
+  00000015          00013 MILI10          EQU     15H
+  00000016          00014 SEG             EQU     16H
+  00000017          00015 SEG10           EQU     17H
+  00000018          00016 RETA            EQU     18H
+  00000005          00017 PA              EQU     05H
+  00000005          00018 TRISA           EQU     05H
+  00000021          00019 VAL             EQU     21H
+                    00020 
+                    00021 
+0000                00022         ORG     0
+0000 2880           00023         GOTO    START
+                    00024 
+                    00025 
+0080                00026         ORG     80
+0080 1683           00027 START   BSF     STATUS,5
+0081 3080           00028         MOVLW   B'10000000'
+0082 0086           00029         MOVWF   TRISB
+0083 3010           00030         MOVLW   B'00010000'
+0084 0085           00031         MOVWF   TRISA
+0085 30C7           00032         MOVLW   B'11000111'
+0086 0081           00033         MOVWF   OP
+0087 1283           00034         BCF     STATUS,5
+0088 0191           00035         CLRF    MILI
+0089 0195           00036         CLRF    MILI10
+008A 0196           00037         CLRF    SEG
+008B 0197           00038         CLRF    SEG10
+                    00039 
+                    00040 
+008C 1F86           00041 N1      BTFSS   PB,7
+008D 28BB           00042         GOTO    CONT    
+                    00043 
+008E 0811           00044 INICIO  MOVF    MILI,0
+008F 20B0           00045         CALL    CONVERT
+0090 0086           00046         MOVWF   PB
+0091 1405           00047         BSF     PA,0
+0092 20AB           00048         CALL    RETARDO
+0093 1005           00049         BCF     PA,0
+0094 0815           00050         MOVF    MILI10,0
+0095 20B0           00051         CALL    CONVERT
+0096 0086           00052         MOVWF   PB
+0097 1485           00053         BSF     PA,1
+MPASM 02.15 Released            CRONO.ASM   1-20-2015  17:26:08         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0098 20AB           00054         CALL    RETARDO
+0099 1085           00055         BCF     PA,1
+009A 0816           00056         MOVF    SEG,0
+009B 20B0           00057         CALL    CONVERT
+009C 0086           00058         MOVWF   PB
+009D 1505           00059         BSF     PA,2
+009E 20AB           00060         CALL    RETARDO
+009F 1105           00061         BCF     PA,2
+00A0 0817           00062         MOVF    SEG10,0
+00A1 20B0           00063         CALL    CONVERT
+00A2 0086           00064         MOVWF   PB
+00A3 1585           00065         BSF     PA,3
+00A4 20AB           00066         CALL    RETARDO
+00A5 1185           00067         BCF     PA,3
+00A6 1E05           00068         BTFSS   PA,4
+00A7 28A9           00069         GOTO    FIN
+00A8 288C           00070         GOTO    N1
+                    00071 
+00A9 018B           00072 FIN     CLRF    INTCON
+00AA 288C           00073         GOTO    N1
+                    00074 
+00AB 30FF           00075 RETARDO MOVLW   H'FF'
+00AC 0098           00076         MOVWF   RETA
+00AD 0B98           00077 B1      DECFSZ  RETA,1
+00AE 28AD           00078         GOTO    B1
+00AF 0008           00079         RETURN
+                    00080 
+00B0 0782           00081 CONVERT ADDWF   PCL,1
+00B1 34C0           00082         RETLW   B'11000000'
+00B2 34F9           00083         RETLW   B'11111001'
+00B3 34A4           00084         RETLW   B'10100100'
+00B4 34B0           00085         RETLW   B'10110000'
+00B5 3499           00086         RETLW   B'10011001'
+00B6 3492           00087         RETLW   B'10010010'
+00B7 3482           00088         RETLW   B'10000010'
+00B8 34F8           00089         RETLW   B'11111000'
+00B9 3480           00090         RETLW   B'10000000'
+00BA 3498           00091         RETLW   B'10011000'
+                    00092 
+                    00093 
+00BB 30A0           00094 CONT    MOVLW   B'10100000'     
+00BC 008B           00095         MOVWF   INTCON
+00BD 30D9           00096         MOVLW   D'217'
+00BE 0081           00097         MOVWF   TMR0
+00BF 288E           00098         GOTO    INICIO
+                    00099 
+                    00100 
+0004                00101         ORG     4
+0004 0092           00102         MOVWF   AUX
+0005 0A91           00103         INCF    MILI,1
+0006 0811           00104         MOVF    MILI,0
+0007 3C0A           00105         SUBLW   D'10'
+0008 1D03           00106         BTFSS   STATUS,2
+MPASM 02.15 Released            CRONO.ASM   1-20-2015  17:26:08         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0009 281D           00107         GOTO    A2
+000A 0191           00108         CLRF    MILI
+000B 0A95           00109         INCF    MILI10,1
+000C 0815           00110         MOVF    MILI10,0
+000D 3C0A           00111         SUBLW   D'10'
+000E 1D03           00112         BTFSS   STATUS,2
+000F 281D           00113         GOTO    A2
+0010 0195           00114         CLRF    MILI10
+0011 0A96           00115         INCF    SEG,1
+0012 0816           00116         MOVF    SEG,0
+0013 3C0A           00117         SUBLW   D'10'
+0014 1D03           00118         BTFSS   STATUS,2
+0015 281D           00119         GOTO    A2
+0016 0196           00120         CLRF    SEG
+0017 0A97           00121         INCF    SEG10,1
+0018 0817           00122         MOVF    SEG10,0
+0019 3C06           00123         SUBLW   D'6'
+001A 1D03           00124         BTFSS   STATUS,2
+001B 281D           00125         GOTO    A2
+001C 0197           00126         CLRF    SEG10
+001D 30D9           00127 A2      MOVLW   D'217'
+001E 0081           00128         MOVWF   TMR0
+001F 110B           00129         BCF     INTCON,2
+0020 0812           00130         MOVF    AUX,0
+0021 0009           00131         RETFIE
+                    00132 
+                    00133         END
+MPASM 02.15 Released            CRONO.ASM   1-20-2015  17:26:08         PAGE  4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+A2                                0000001D
+AUX                               00000012
+B1                                000000AD
+CONT                              000000BB
+CONVERT                           000000B0
+FIN                               000000A9
+INICIO                            0000008E
+INTCON                            0000000B
+MILI                              00000011
+MILI10                            00000015
+N1                                0000008C
+OP                                00000001
+PA                                00000005
+PB                                00000006
+PCL                               00000002
+RETA                              00000018
+RETARDO                           000000AB
+SEG                               00000016
+SEG10                             00000017
+START                             00000080
+STATUS                            00000003
+TMR0                              00000001
+TRISA                             00000005
+TRISB                             00000006
+VAL                               00000021
+VAR                               00000010
+__16F84                           00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : X---XXXXXXXXXXXX XXXXXXXXXXXXXXXX XX-------------- ----------------
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+
+All other memory blocks unused.
+
+Program Memory Words Used:    95
+Program Memory Words Free:   929
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+
